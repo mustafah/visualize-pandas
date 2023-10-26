@@ -71,7 +71,7 @@ def highlight_cells_script(unique_id):
     </style>
     """
 
-def visualize_merge(df1, df2, how, on, maxHeight = 200, theme='light', indicator=False, show=True):
+def visualize_merge(df1, df2, on = None, how = 'inner', maxHeight = 200, theme='light', indicator=False, show=True):
     merged_df = pd.merge(df1, df2, how=how, on=on, indicator=indicator)
     if show:
         merge_values = set(merged_df[on])
