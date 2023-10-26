@@ -42,15 +42,19 @@ def highlight_cells_script(unique_id):
                 dfContainer.querySelectorAll(".highlight").forEach((cell) => {
                     cell.classList.remove("highlight");
                 });
+                let found = false;
                 dfContainer.querySelectorAll(`td`).forEach((cell) => {
                     if (cell.textContent.includes(value)) {
                         cell.classList.add("highlight");
-                        dfContainer.scrollTop = 0;
-                        setTimeout(function() {
-                            let rect = cell.getBoundingClientRect();
-                            let containerRect = dfContainer.getBoundingClientRect();
-                            dfContainer.scrollTop = rect.top - containerRect.top - dfContainer.clientHeight / 2 + rect.height / 2;
-                        }, 0);
+                        if (!found) {
+                            found = true;
+                            dfContainer.scrollTop = 0;
+                            setTimeout(function() {
+                                let rect = cell.getBoundingClientRect();
+                                let containerRect = dfContainer.getBoundingClientRect();
+                                dfContainer.scrollTop = rect.top - containerRect.top - dfContainer.clientHeight / 2 + rect.height / 2;
+                            }, 0);
+                        }
                     }
                 });
             });
