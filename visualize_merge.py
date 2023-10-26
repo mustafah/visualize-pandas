@@ -117,6 +117,8 @@ def visualize_merge(df1, df2, how, on, maxHeight = 200, theme='light'):
     """
     
     display(HTML(template))
+    
+    return merged_df
 
 # df1 = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
 # df2 = pd.DataFrame({'A': [1, 3, 4], 'C': [7, 8, 9]})
