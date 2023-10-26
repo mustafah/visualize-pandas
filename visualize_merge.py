@@ -3,6 +3,8 @@
 import pandas as pd
 import inspect
 import re
+import uuid
+
 from IPython.core.display import display, HTML
 
 def to_colored_html(df, color_map, merge_column=None, merge_values=None, maxHeight=200, theme='light'):
