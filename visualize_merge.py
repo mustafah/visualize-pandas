@@ -1,7 +1,8 @@
 import pandas as pd
 from IPython.core.display import display, HTML
 
-def to_colored_html(df, color_map, merge_column=None, merge_values=None, maxHeight = 200):
+def to_colored_html(df, color_map, merge_column=None, merge_values=None, maxHeight = 200, theme='light'):
+    text_color = 'black' if theme == 'light' else 'white'
     html_str = f"<div style='max-height: {maxHeight}px; overflow: scroll;'>"
     html_str += '<table>'
     html_str += '<thead>'
@@ -14,7 +15,7 @@ def to_colored_html(df, color_map, merge_column=None, merge_values=None, maxHeig
         for col in df.columns:
             color = color_map.get(col, 'black')
             emoji = "🔗 " if (col == merge_column and row[col] in merge_values) else ""
-            html_str += f"<td style='background-color: {color};'>{emoji}{row[col]}</td>"
+            html_str += f"<td style='background-color: {color}; color: {text_color};'>{emoji}{row[col]}</td>"
         html_str += '</tr>'
     html_str += '</tbody></table>'
     html_str += f"</div>"
