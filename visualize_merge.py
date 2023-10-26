@@ -2,7 +2,7 @@ import pandas as pd
 from IPython.core.display import display, HTML
 
 def to_colored_html(df, color_map, merge_column=None, merge_values=None, maxHeight = 200, theme='light'):
-    text_color = 'black' if theme == 'light' else 'white'
+    text_color = 'white' if theme == 'light' else 'dark'
     html_str = f"<div style='max-height: {maxHeight}px; overflow: scroll;'>"
     html_str += '<table>'
     html_str += '<thead>'
