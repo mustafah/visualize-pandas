@@ -1,2 +1,2 @@
-# visualize_pandas
+# visualize-pandas
  
