@@ -1,4 +1,6 @@
 import pandas as pd
+import inspect
+import re
 from IPython.core.display import display, HTML
 
 def to_colored_html(df, color_map, merge_column=None, merge_values=None, maxHeight = 200, theme='light'):
@@ -35,14 +37,26 @@ def visualize_merge(df1, df2, how, on, maxHeight = 200, theme='light'):
     df2_html = to_colored_html(df2, color_map_df2, merge_column=on, merge_values=merge_values, maxHeight=maxHeight, theme=theme)
     merged_html = to_colored_html(merged_df, color_map_merged, merge_column=on, merge_values=merge_values, maxHeight=maxHeight, theme=theme)
     
+    # Extract the calling line
+    stack = inspect.stack()
+    calling_line = stack[1].code_context[0].strip()
+  
+    # Parse the calling line to get variable names
+    match = re.search(r"visualize_merge\((.*), (.*),", calling_line)
+    if match:
+        name_df1, name_df2 = match.groups()
+    else:
+        name_df1, name_df2 = "DataFrame 1", "DataFrame 2"
+    
+
     template = f"""
     <div style="width:100%; display: flex; gap: 32px">
         <div style="">
-            <h4>DataFrame 1</h4>
+            <h4>{name_df1}</h4>
             {df1_html}
         </div>
         <div style="">
-            <h4>+ DataFrame 2</h4>
+            <h4>+ {name_df2}</h4>
             {df2_html}
         </div>
     </div>
