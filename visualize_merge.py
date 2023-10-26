@@ -69,7 +69,7 @@ def highlight_cells_script(unique_id):
 
 def visualize_merge(df1, df2, how, on, maxHeight = 200, theme='light', indicator=False, show=True):
     merged_df = pd.merge(df1, df2, how=how, on=on, indicator=indicator)
-    if not show:
+    if show:
         merge_values = set(merged_df[on])
         
         color_map_df1 = {col: '#1E88E5' for col in df1.columns}
