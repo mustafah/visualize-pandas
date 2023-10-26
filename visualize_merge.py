@@ -21,7 +21,7 @@ def to_colored_html(df, color_map, merge_column=None, merge_values=None, maxHeig
     html_str += f"</div>"
     return html_str
 
-def visualize_merge(df1, df2, how, on, maxHeight = 200):
+def visualize_merge(df1, df2, how, on, maxHeight = 200, theme='light'):
     merged_df = pd.merge(df1, df2, how=how, on=on)
     merge_values = set(merged_df[on])
     
@@ -31,9 +31,9 @@ def visualize_merge(df1, df2, how, on, maxHeight = 200):
     
     color_map_merged = {**color_map_df2, **color_map_df1}
     
-    df1_html = to_colored_html(df1, color_map_df1, merge_column=on, merge_values=merge_values, maxHeight=maxHeight)
-    df2_html = to_colored_html(df2, color_map_df2, merge_column=on, merge_values=merge_values, maxHeight=maxHeight)
-    merged_html = to_colored_html(merged_df, color_map_merged, merge_column=on, merge_values=merge_values, maxHeight=maxHeight)
+    df1_html = to_colored_html(df1, color_map_df1, merge_column=on, merge_values=merge_values, maxHeight=maxHeight, theme=theme)
+    df2_html = to_colored_html(df2, color_map_df2, merge_column=on, merge_values=merge_values, maxHeight=maxHeight, theme=theme)
+    merged_html = to_colored_html(merged_df, color_map_merged, merge_column=on, merge_values=merge_values, maxHeight=maxHeight, theme=theme)
     
     template = f"""
     <div style="width:100%; display: flex; gap: 32px">
