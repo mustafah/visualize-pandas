@@ -1,3 +1,5 @@
+# import requests; exec(requests.get('https://raw.githubusercontent.com/mustafah/visualize-pandas/main/visualize_merge.py', headers={'Cache-Control': 'no-cache'}).text)
+
 import pandas as pd
 import inspect
 import re
