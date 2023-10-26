@@ -67,56 +67,57 @@ def highlight_cells_script(unique_id):
     </style>
     """
 
-def visualize_merge(df1, df2, how, on, maxHeight = 200, theme='light', indicator=False):
-    merged_df = pd.merge(df1, df2, how=how, on=on, indicator=True)
-    merge_values = set(merged_df[on])
-    
-    color_map_df1 = {col: '#1E88E5' for col in df1.columns}
-    color_map_df2 = {col: '#E53935' for col in df2.columns}
-    color_map_df2[on] = color_map_df1[on]  # Color the mergeOn column in df2 the same as in df1
-    
-    color_map_merged = {**color_map_df2, **color_map_df1}
-    
-    df1_html = to_colored_html(df1, color_map_df1, merge_column=on, merge_values=merge_values, maxHeight=maxHeight, theme=theme)
-    df2_html = to_colored_html(df2, color_map_df2, merge_column=on, merge_values=merge_values, maxHeight=maxHeight, theme=theme)
-    merged_html = to_colored_html(merged_df, color_map_merged, merge_column=on, merge_values=merge_values, maxHeight=maxHeight, theme=theme)
-    
-    # Extract the calling line
-    stack = inspect.stack()
-    calling_line = stack[1].code_context[0].strip()
+def visualize_merge(df1, df2, how, on, maxHeight = 200, theme='light', indicator=False, show=True):
+    merged_df = pd.merge(df1, df2, how=how, on=on, indicator=indicator)
+    if not show:
+        merge_values = set(merged_df[on])
+        
+        color_map_df1 = {col: '#1E88E5' for col in df1.columns}
+        color_map_df2 = {col: '#E53935' for col in df2.columns}
+        color_map_df2[on] = color_map_df1[on]  # Color the mergeOn column in df2 the same as in df1
+        
+        color_map_merged = {**color_map_df2, **color_map_df1}
+        
+        df1_html = to_colored_html(df1, color_map_df1, merge_column=on, merge_values=merge_values, maxHeight=maxHeight, theme=theme)
+        df2_html = to_colored_html(df2, color_map_df2, merge_column=on, merge_values=merge_values, maxHeight=maxHeight, theme=theme)
+        merged_html = to_colored_html(merged_df, color_map_merged, merge_column=on, merge_values=merge_values, maxHeight=maxHeight, theme=theme)
+        
+        # Extract the calling line
+        stack = inspect.stack()
+        calling_line = stack[1].code_context[0].strip()
 
-    # Parse the calling line to get variable names
-    match = re.search(r"visualize_merge\(([^,]*), ([^,]*),", calling_line)
-    if match:
-        name_df1, name_df2 = match.groups()
-    else:
-        name_df1, name_df2 = "DataFrame 1", "DataFrame 2"
+        # Parse the calling line to get variable names
+        match = re.search(r"visualize_merge\(([^,]*), ([^,]*),", calling_line)
+        if match:
+            name_df1, name_df2 = match.groups()
+        else:
+            name_df1, name_df2 = "DataFrame 1", "DataFrame 2"
 
-    unique_id = str(uuid.uuid4())
-    script = highlight_cells_script(unique_id)
-    
-    template = f"""
-    {script}
-    <div id='{unique_id}'>
-        <div class='visualized-merge-container' style="width:100%; display: flex; gap: 32px">
-            <div style="">
-                <h4>{name_df1}</h4>
-                {df1_html}
+        unique_id = str(uuid.uuid4())
+        script = highlight_cells_script(unique_id)
+        
+        template = f"""
+        {script}
+        <div id='{unique_id}'>
+            <div class='visualized-merge-container' style="width:100%; display: flex; gap: 32px">
+                <div style="">
+                    <h4>{name_df1}</h4>
+                    {df1_html}
+                </div>
+                <div style="">
+                    <h4>+ {name_df2}</h4>
+                    {df2_html}
+                </div>
             </div>
-            <div style="">
-                <h4>+ {name_df2}</h4>
-                {df2_html}
+            <br/>
+            <div style="clear:both;">
+                <h4>= Merged DataFrame (how='{how}', on='{on}')</h4>
+                {merged_html}
             </div>
         </div>
-        <br/>
-        <div style="clear:both;">
-            <h4>= Merged DataFrame (how='{how}', on='{on}')</h4>
-            {merged_html}
-        </div>
-    </div>
-    """
-    
-    display(HTML(template))
+        """
+        
+        display(HTML(template))
     
     return merged_df
 
