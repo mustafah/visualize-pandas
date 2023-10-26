@@ -83,7 +83,6 @@ def visualize_merge(df1, df2, how, on, maxHeight = 200, theme='light'):
     stack = inspect.stack()
     calling_line = stack[1].code_context[0].strip()
 
-    print(calling_line)
     # Parse the calling line to get variable names
     match = re.search(r"visualize_merge\(([^,]*), ([^,]*),", calling_line)
     if match:
