@@ -3,9 +3,9 @@ import inspect
 import re
 from IPython.core.display import display, HTML
 
-def to_colored_html(df, color_map, merge_column=None, merge_values=None, maxHeight = 200, theme='light'):
+def to_colored_html(df, color_map, merge_column=None, merge_values=None, maxHeight=200, theme='light'):
     text_color = 'white' if theme == 'light' else 'dark'
-    html_str = f"<div style='max-height: {maxHeight}px; overflow: scroll;'>"
+    html_str = f"<div class='visualized-df-container' style='max-height: {maxHeight}px; overflow: scroll;'>"
     html_str += '<table>'
     html_str += '<thead>'
     for col in df.columns:
@@ -16,12 +16,52 @@ def to_colored_html(df, color_map, merge_column=None, merge_values=None, maxHeig
         html_str += '<tr>'
         for col in df.columns:
             color = color_map.get(col, 'black')
-            emoji = "🔗 " if (col == merge_column and row[col] in merge_values) else ""
-            html_str += f"<td style='background-color: {color}; color: {text_color};'>{emoji}{row[col]}</td>"
+            value = row[col]
+            if (col == merge_column and value in merge_values):
+                display_value = f"🔗 {value}"
+                html_str += f"<td class='clickable' onclick=\"highlightCells('{display_value}')\" style='background-color: {color}; cursor: pointer; color: {text_color};'>{display_value}</td>"
+            else:
+                html_str += f"<td style='background-color: {color}; color: {text_color};'>{value}</td>"
         html_str += '</tr>'
     html_str += '</tbody></table>'
     html_str += f"</div>"
     return html_str
+
+
+def highlight_cells_script(unique_id):
+    return """
+    <script>
+        function highlightCells(value) {
+            const rootElement = document.getElementById('""" + unique_id + """');
+            let dfContainers = rootElement.querySelectorAll(".visualized-df-container");
+            dfContainers.forEach((dfContainer) => {
+                dfContainer.querySelectorAll(".highlight").forEach((cell) => {
+                    cell.classList.remove("highlight");
+                });
+                dfContainer.querySelectorAll(`td`).forEach((cell) => {
+                    if (cell.textContent.includes(value)) {
+                        cell.classList.add("highlight");
+                        dfContainer.scrollTop = 0;
+                        setTimeout(function() {
+                            let rect = cell.getBoundingClientRect();
+                            let containerRect = dfContainer.getBoundingClientRect();
+                            dfContainer.scrollTop = rect.top - containerRect.top - dfContainer.clientHeight / 2 + rect.height / 2;
+                        }, 0);
+                    }
+                });
+            });
+        }
+    </script>
+    <style>
+        .highlight {
+            // border: 3px solid yellow !important;
+            box-shadow: inset 0 0 4px yellow !important;
+            position: relative;
+            outline: 2px solid yellow;
+            outline-offset: -2px;
+        }
+    </style>
+    """
 
 def visualize_merge(df1, df2, how, on, maxHeight = 200, theme='light'):
     merged_df = pd.merge(df1, df2, how=how, on=on)
@@ -48,23 +88,28 @@ def visualize_merge(df1, df2, how, on, maxHeight = 200, theme='light'):
         name_df1, name_df2 = match.groups()
     else:
         name_df1, name_df2 = "DataFrame 1", "DataFrame 2"
-    
 
+    unique_id = str(uuid.uuid4())
+    script = highlight_cells_script(unique_id)
+    
     template = f"""
-    <div style="width:100%; display: flex; gap: 32px">
-        <div style="">
-            <h4>{name_df1}</h4>
-            {df1_html}
+    {script}
+    <div id='{unique_id}'>
+        <div class='visualized-merge-container' style="width:100%; display: flex; gap: 32px">
+            <div style="">
+                <h4>{name_df1}</h4>
+                {df1_html}
+            </div>
+            <div style="">
+                <h4>+ {name_df2}</h4>
+                {df2_html}
+            </div>
         </div>
-        <div style="">
-            <h4>+ {name_df2}</h4>
-            {df2_html}
+        <br/>
+        <div style="clear:both;">
+            <h4>= Merged DataFrame (how='{how}', on='{on}')</h4>
+            {merged_html}
         </div>
-    </div>
-    <br/>
-    <div style="clear:both;">
-        <h4>= Merged DataFrame (how='{how}', on='{on}')</h4>
-        {merged_html}
     </div>
     """
     
